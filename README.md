@@ -4,9 +4,15 @@ A local log redactor written in Python. It masks emails, IP addresses,
 credentials, tokens and cookies in a log file before you share that log
 with vendor support, a forum, or an AI tool.
 
-Everything runs on your machine. The log is never stored, sent, or
-uploaded anywhere, and there are no dependencies beyond the Python
-standard library.
+Everything runs on your machine. Nothing is sent or uploaded, and there
+are no dependencies beyond the Python standard library. The tool does
+not keep a copy of the original log; the only file it writes is the
+redacted output you ask for with `-o`.
+
+> **Warning:** `--preview` prints the original, unredacted text next to
+> the redacted text. Use it only on your own screen, and never copy,
+> record, screenshot or share its output. To share a log, use the normal
+> output, `-o`, or `--report`.
 
 ## What it masks
 
@@ -54,7 +60,8 @@ Write the redacted log to a new file (the original is never modified):
 python3 logshare.py app.log -o app.clean.log
 ```
 
-Preview the changes as a before/after diff:
+Preview the changes as a before/after diff. This prints the original,
+unredacted lines, so keep it private:
 
 ```
 python3 logshare.py app.log --preview
@@ -106,8 +113,9 @@ A redactor like this is a filter, not a guarantee. Pattern-based
 redaction can miss secrets (an unusual key name, an unexpected format)
 and can mask harmless text (a string that only looks like an IP
 address). Always review the output yourself before you share it. The
-tool never uploads anything and never keeps a copy of the original log
-or of the removed values, so the review step is yours.
+tool never uploads anything and does not keep a copy of the original log
+or of the removed values. With `-o` it writes the redacted log only. The
+review step is yours.
 
 ## License
 
