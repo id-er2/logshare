@@ -15,6 +15,7 @@ kept in memory only and is never written out.
 import argparse
 import difflib
 import json
+import os
 import re
 import sys
 from collections import OrderedDict
@@ -294,6 +295,20 @@ def main(argv=None):
         print("%-22s placeholder: [KEY_1], [KEY_2], ..." % "sensitive JSON field")
         print("%-22s placeholder: [PRIVATE_KEY_1], ..." % "private key block")
         return 0
+
+    if args.output and args.file and args.file != "-":
+        same = os.path.abspath(args.output) == os.path.abspath(args.file)
+        if not same and os.path.exists(args.output):
+            try:
+                same = os.path.samefile(args.output, args.file)
+            except OSError:
+                same = False
+        if same:
+            print("logshare: refusing to write %s over the input file %s; "
+                  "the original log would be destroyed. Write to a "
+                  "different path." % (args.output, args.file),
+                  file=sys.stderr)
+            return 2
 
     if args.file and args.file != "-":
         with open(args.file, "r", encoding="utf-8", errors="replace") as fh:

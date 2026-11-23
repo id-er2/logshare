@@ -197,6 +197,21 @@ class CliTests(unittest.TestCase):
         # as plain text the token keyword rule still masks the value
         self.assertIn('"token": "[CREDENTIAL_1]"', out)
 
+    def test_output_refuses_to_overwrite_input(self):
+        import os
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            src = os.path.join(tmp, "app.log")
+            original = "secret password=hunter2\n"
+            with open(src, "w", encoding="utf-8") as fh:
+                fh.write(original)
+            code, _, err = self.run_cli([src, "-o", src])
+            self.assertEqual(code, 2)
+            self.assertIn("input", err)
+            with open(src, encoding="utf-8") as fh:
+                self.assertEqual(fh.read(), original)
+
 
 if __name__ == "__main__":
     unittest.main()
